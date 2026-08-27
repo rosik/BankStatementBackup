@@ -1,16 +1,16 @@
 {
   "manifest_version": 3,
 
-  "name": "Bank statement backup",
-  "description": "Save client operations from online bank to local disk",
-  "version": "1.1",
+  "name": "Ozon Bank statement backup",
+  "description": "Export Ozon Bank operations to CSV with a date range picker",
+  "version": "2.0",
 
-  "permissions": [ "debugger", "tabs", "downloads" ],
+  "permissions": ["scripting", "downloads", "activeTab"],
   "host_permissions": [
     "https://finance.ozon.ru/*"
   ],
-  "background": {
-    "service_worker": "service-worker.js"
-  },
-  "action": {}
+  "action": {
+    "default_title": "Ozon Bank statement backup",
+    "default_popup": "popup.html"
+  }
 }
