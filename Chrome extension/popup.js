@@ -154,7 +154,7 @@ async function exportInPage(fromDate, toDate) {
       return s;
     }
 
-    const header = ["date", "time", "amount", "comment", "purpose", "counterpartyName"];
+    const header = ["Дата", "Время", "Сумма", "Комментарий", "Плательщик"];
     const rows = [header.join(",")];
 
     for (const item of allItems) {
@@ -162,9 +162,11 @@ async function exportInPage(fromDate, toDate) {
       const time = toLocalTime(item.time);
       const amount = toAmount(item.accountAmount?.amountAbs?.cents ?? 0, item.accountAmount?.sign);
       const comment = csvEscape(item.comment);
-      const purpose = csvEscape(item.purpose);
-      const counterparty = csvEscape(item.counterpartyName);
-      rows.push([date, time, amount, comment, purpose, counterparty].join(","));
+      // Combine purpose and counterpartyName into a single column
+      const purpose = item.purpose || "";
+      const counterparty = item.counterpartyName || "";
+      const payer = csvEscape(`${purpose}, ${counterparty}`);
+      rows.push([date, time, amount, comment, payer].join(","));
     }
 
     // Prepend BOM so Excel detects UTF-8
