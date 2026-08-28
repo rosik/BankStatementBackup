@@ -8,12 +8,13 @@ Adds a popup with two date inputs (**С даты** / **По дату**, both def
 
 ### CSV columns
 
-`date`, `time`, `amount`, `comment`, `purpose`, `counterpartyName`
+`Дата`, `Время`, `Сумма`, `Комментарий`, `Плательщик`
 
-- `date` — operation date in the browser's local timezone, format `YYYY-MM-DD`
-- `time` — operation time in the browser's local timezone, format `HH:MM`
-- `amount` — rubles with two decimals (negative for debits)
-- `comment`, `purpose`, `counterpartyName` — as returned by the API
+- `Дата` — operation date in the browser's local timezone, format `YYYY-MM-DD`
+- `Время` — operation time in the browser's local timezone, format `HH:MM`
+- `Сумма` — rubles with two decimals (negative for debits)
+- `Комментарий` — the API `comment` field
+- `Плательщик` — combined from the API `purpose` and `counterpartyName` fields as `<purpose>, <counterpartyName>`
 
 The file is named `OzonBank_<from>_to_<to>.csv` (e.g. `OzonBank_2026-08-28_to_2026-08-28.csv`) and saved to your Downloads folder. A UTF-8 BOM is included so Excel opens it correctly.
 
