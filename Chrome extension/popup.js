@@ -128,7 +128,7 @@ async function exportInPage(fromDate, toDate) {
 
     const results = await Promise.all(EFFECTS.map(fetchOperations));
     const allItems = results.flat();
-    allItems.sort((a, b) => new Date(b.time) - new Date(a.time));
+    allItems.sort((a, b) => new Date(a.time) - new Date(b.time));
 
     // Convert UTC time to the browser's local timezone, split into date and time
     function toLocalDate(isoUtc) {
