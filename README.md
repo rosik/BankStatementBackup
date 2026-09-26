@@ -1,10 +1,10 @@
 # BankStatementBackup
 
-Export Ozon Bank operations for a date range to CSV from a Chrome extension.
+Export Ozon Bank income and expense operations for a date range to CSV from a Chrome extension.
 
 ## What it does
 
-Adds a popup with two date inputs (**С даты** / **По дату**, both default to today). When you click **Выгрузить CSV**, the extension calls the Ozon Bank operations API (`groupOperationsV3`) from the active `finance.ozon.ru` tab (using your existing login session/cookies), paginates through all results (`perPage: 100`), and downloads a CSV file.
+Adds a popup with two date inputs (**С даты** / **По дату**, both default to today). When you click **Выгрузить CSV**, the extension calls the Ozon Bank operations API (`groupOperationsV3`) from the active `finance.ozon.ru` tab (using your existing login session/cookies), fetches both income (`EFFECT_CREDIT`) and expenses (`EFFECT_DEBIT`), paginates through all results (`perPage: 100`), and downloads one chronologically sorted CSV file.
 
 ### CSV columns
 
@@ -38,4 +38,4 @@ The API `dateRange` filter is calendar-date based. `from` and `to` are sent as t
 4. Click **Выгрузить CSV**
 5. The CSV downloads automatically
 
-> The extension only works while you have an active, logged-in `finance.ozon.ru` tab. It currently exports incoming operations (`EFFECT_CREDIT`); change the `effect` value in `popup.js` to export other types if needed.
+> The extension only works while you have an active, logged-in `finance.ozon.ru` tab. It exports both incoming operations (`EFFECT_CREDIT`) and expenses (`EFFECT_DEBIT`).

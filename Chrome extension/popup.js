@@ -75,52 +75,60 @@ async function exportInPage(fromDate, toDate) {
   try {
     const PER_PAGE = 100;
     const ENDPOINT = "https://finance.ozon.ru/apps/pfm/api/operations/groupOperationsV3";
+    const EFFECTS = ["EFFECT_CREDIT", "EFFECT_DEBIT"];
 
-    // The API dateRange is calendar-date based.
-    const body = {
-      cursorPagination: { perPage: PER_PAGE },
-      filter: {
-        timeZone: "Europe/Moscow",
-        dateRange: { from: fromDate, to: toDate },
-        coopAccountIDs: [],
-        accountTokens: [],
-        effect: "EFFECT_CREDIT",
-      },
-    };
+    async function fetchOperations(effect) {
+      const items = [];
+      let cursor = null;
 
-    const allItems = [];
-    let cursor = null;
+      do {
+        // The API dateRange is calendar-date based. Each effect has its own
+        // pagination cursor, so income and expenses must be fetched separately.
+        const request = {
+          cursorPagination: { perPage: PER_PAGE },
+          filter: {
+            timeZone: "Europe/Moscow",
+            dateRange: { from: fromDate, to: toDate },
+            coopAccountIDs: [],
+            accountTokens: [],
+            effect,
+          },
+        };
+        if (cursor) {
+          request.cursorPagination.cursor = cursor;
+        }
 
-    do {
-      const request = JSON.parse(JSON.stringify(body));
-      if (cursor) {
-        request.cursorPagination.cursor = cursor;
-      }
+        const resp = await fetch(ENDPOINT, {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+            "x-o3-language": "ru",
+          },
+          credentials: "include",
+          body: JSON.stringify(request),
+        });
 
-      const resp = await fetch(ENDPOINT, {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "content-type": "application/json",
-          "x-o3-language": "ru",
-        },
-        credentials: "include",
-        body: JSON.stringify(request),
-      });
+        if (!resp.ok) {
+          throw new Error(`HTTP ${resp.status}: ${await resp.text()}`);
+        }
 
-      if (!resp.ok) {
-        throw new Error(`HTTP ${resp.status}: ${await resp.text()}`);
-      }
+        const json = await resp.json();
+        const group = json?.data?.me?.client?.groupOperationsV3;
+        if (!group) {
+          throw new Error("Неожиданный ответ API");
+        }
 
-      const json = await resp.json();
-      const group = json?.data?.me?.client?.groupOperationsV3;
-      if (!group) {
-        throw new Error("Неожиданный ответ API");
-      }
+        items.push(...(group.items || []));
+        cursor = group.cursors?.next || null;
+      } while (cursor);
 
-      allItems.push(...(group.items || []));
-      cursor = group.cursors?.next || null;
-    } while (cursor);
+      return items;
+    }
+
+    const results = await Promise.all(EFFECTS.map(fetchOperations));
+    const allItems = results.flat();
+    allItems.sort((a, b) => new Date(b.time) - new Date(a.time));
 
     // Convert UTC time to the browser's local timezone, split into date and time
     function toLocalDate(isoUtc) {
