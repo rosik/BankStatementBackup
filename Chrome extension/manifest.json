@@ -7,7 +7,8 @@
 
   "permissions": [ "debugger", "tabs", "downloads" ],
   "host_permissions": [
-    "https://finance.ozon.ru/*"
+    "https://finance.ozon.ru/*",
+    "https://www.tbank.ru/*"
   ],
   "background": {
     "service_worker": "service-worker.js"
